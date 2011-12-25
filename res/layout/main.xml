@@ -4,7 +4,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:padding="10dip" >
-
+
     <EditText
         android:id="@+id/editText1"
         android:layout_width="match_parent"
@@ -15,18 +15,50 @@
     <EditText
         android:id="@+id/et_title"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.84"
+        android:layout_weight="0.05"
         android:hint="@string/title_hint"
-        android:inputType="textMultiLine" >
+        android:inputType="textMultiLine" android:layout_height="wrap_content"/>
 
-        <requestFocus />
-    </EditText>
-
-    <Spinner
-        android:id="@+id/sp_priority"
+    <LinearLayout
+        android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" >
+
+        <RelativeLayout
+            android:id="@+id/relativeLayout1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <CheckBox
+                android:id="@+id/checkBox1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:checked="false"
+                android:text="@string/post_fb" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/checkBox1"
+                android:layout_alignBottom="@+id/checkBox1"
+                android:layout_alignParentLeft="true"
+                android:text="@string/left_char" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/textView2"
+                android:layout_alignBottom="@+id/textView2"
+                android:layout_toRightOf="@+id/textView2"
+                android:text="TextView" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout1"
@@ -59,15 +91,22 @@
             android:id="@+id/bt_send"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/send" android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:text="@string/send" />
 
         <Button
             android:id="@+id/bt_reset"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/clear" android:layout_weight="1"/>
-
+            android:layout_weight="1"
+            android:text="@string/clear" />
     </LinearLayout>
+
+    <Spinner
+        android:id="@+id/sp_priority"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible" />
 
     <TextView
         android:id="@+id/textView1"
@@ -75,5 +114,7 @@
         android:layout_height="wrap_content"
         android:text="!pri ^date:time"
         android:textAppearance="?android:attr/textAppearanceLarge" />
+    
+    
 
 </LinearLayout>
