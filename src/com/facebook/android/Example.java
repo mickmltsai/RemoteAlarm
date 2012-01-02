@@ -16,16 +16,32 @@
 
 package com.facebook.android;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.security.auth.PrivateCredentialPermission;
+
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Entity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,8 +50,14 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.facebook.android.AsyncFacebookRunner.RequestListener;
+import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.SessionEvents.AuthListener;
 import com.facebook.android.SessionEvents.LogoutListener;
+
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 
 public class Example extends Activity {
 
@@ -52,6 +74,10 @@ public class Example extends Activity {
 
 	private Facebook mFacebook;
 	private AsyncFacebookRunner mAsyncRunner;
+	
+	private RequestListener postListener;
+	
+	HttpClient client;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -77,6 +103,59 @@ public class Example extends Activity {
 		SessionEvents.addAuthListener(new SampleAuthListener());
 		SessionEvents.addLogoutListener(new SampleLogoutListener());
 		mLoginButton.init(this, mFacebook);
+		
+		//----------------------------------
+		
+		if(mFacebook.isSessionValid()){
+			Bundle b = new Bundle();
+			b.putString("method", "POST");
+			b.putString("message",getIntent().getExtras().getString("msg"));
+
+			
+			mFacebook.authorize(Example.this, new String[]{"publish_stream"}, -1, new DialogListener() {
+				
+				@Override
+				public void onFacebookError(FacebookError e) {		
+				}
+				
+				@Override
+				public void onError(DialogError e) {	
+				}
+				
+				@Override
+				public void onComplete(Bundle values) {
+				}
+				
+				@Override
+				public void onCancel() {	
+				}
+			});
+			
+			mAsyncRunner.request("me/feed", b, new RequestListener() {
+				
+				@Override
+				public void onMalformedURLException(MalformedURLException e, Object state) {	
+				}
+				
+				@Override
+				public void onIOException(IOException e, Object state) {
+				}
+				
+				@Override
+				public void onFileNotFoundException(FileNotFoundException e, Object state) {
+				}
+				
+				@Override
+				public void onFacebookError(FacebookError e, Object state) {
+				}
+				
+				@Override
+				public void onComplete(String response, Object state) {
+				}
+			});
+		}
+		
+		//-----------------------------------
 
 		mRequestButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
