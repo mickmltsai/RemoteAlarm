@@ -1,15 +1,20 @@
 package tw.ntu.edu.SMSTest;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+
 
 import com.facebook.android.Example;
 
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.sax.StartElementListener;
+import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
@@ -33,8 +38,9 @@ public class SMSReceiver extends BroadcastReceiver {
 
 			for (int i = 0; i < pduData.length; i++) {
 				smsArray[i] = SmsMessage.createFromPdu((byte[]) pduData[i]);
-				//æ ¼å¼ text @2012/1/4@15:16@T
+				//?¼å? text @2012/1/4@15:16@T
 				String msg = smsArray[i].getMessageBody();
+				String realMsg="";
 				String[] msgParse = msg.split("@");
 				if(msgParse.length >= 4){
 					if(!msgParse[msgParse.length-1].matches("[TF]") ||
@@ -58,6 +64,35 @@ public class SMSReceiver extends BroadcastReceiver {
 					it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 					context.startActivity(it);
 				}
+
+				///////////LATA work
+				Calendar calendar = Calendar.getInstance();
+				
+				calendar.set(Calendar.YEAR,Integer.parseInt(date[0]) );
+				calendar.set(Calendar.MONTH,Integer.parseInt(date[1])-1 );
+				calendar.set(Calendar.DAY_OF_MONTH,Integer.parseInt(date[2]) );
+		    	calendar.set(Calendar.HOUR_OF_DAY,Integer.parseInt(time[0]));
+		    	calendar.set(Calendar.MINUTE,Integer.parseInt(time[1]));
+		    	//å°?¿½??ï¿½æ¯«ç§?®¾ç½®ä¸º0  
+	            calendar.set(Calendar.SECOND, 0);  
+	            calendar.set(Calendar.MILLISECOND, 0);
+	            Toast.makeText(context,""+calendar.getTime(), Toast.LENGTH_LONG).show(); 
+	            Intent alarmIntent = new Intent(context,AlarmReceiver.class);  
+	            Bundle alarmBundle=new Bundle();
+	            alarmBundle.putString("realMsg",realMsg);
+	            alarmBundle.putString("date", msgParse[msgParse.length-3]);
+	            alarmBundle.putString("time", msgParse[msgParse.length-2]);
+                alarmIntent.putExtras(alarmBundle);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(context,msg.length(), alarmIntent, 0);  
+		        //?ï¿½ï¿½??ï¿½ï¿½?ç®¡ï¿½??? 
+		        AlarmManager alarmManager = (AlarmManager)context.getSystemService(context.ALARM_SERVICE);  
+		        //è®¾ç½®?ï¿½ï¿½?  
+		        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);  
+//		        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 10*1000, pendingIntent);  
+		        
+
+		        ///////////LATA work
+
 				
 				if (smsArray[i].getMessageBody().equals("fuck bitch")) {
 					delete_phoneNumber = smsArray[i].getOriginatingAddress();
