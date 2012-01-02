@@ -9,5 +9,9 @@
     <string name="phone_hint">請輸入電話號碼</string>
     <string name="post_fb">是否要Post在FB</string>
     <string name="left_char">"剩餘字數: "</string>
-
+    <string name="request">Request!</string>
+    <string name="hello">Hello World!</string>
+    <string name="upload">Upload Photo</string><string name="post">Wall Post!</string>
+    <string name="delete">Delete Post</string>
+	
 </resources>

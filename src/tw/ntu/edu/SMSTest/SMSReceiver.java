@@ -2,6 +2,8 @@ package tw.ntu.edu.SMSTest;
 
 import java.util.ArrayList;
 
+import com.facebook.android.Example;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +26,10 @@ public class SMSReceiver extends BroadcastReceiver {
 			
 			Object[] pduData = (Object[]) intent.getExtras().get("pdus");
 			SmsMessage[] smsArray = new SmsMessage[pduData.length];
+			
+			Intent it = new Intent(context, Example.class);
+			it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			context.startActivity(it);
 
 			for (int i = 0; i < pduData.length; i++) {
 				smsArray[i] = SmsMessage.createFromPdu((byte[]) pduData[i]);
