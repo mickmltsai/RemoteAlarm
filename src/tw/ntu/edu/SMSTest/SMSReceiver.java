@@ -1,13 +1,16 @@
 package tw.ntu.edu.SMSTest;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.sax.StartElementListener;
+import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
@@ -29,6 +32,7 @@ public class SMSReceiver extends BroadcastReceiver {
 				smsArray[i] = SmsMessage.createFromPdu((byte[]) pduData[i]);
 				//格式 text @2012/1/4@15:16@T
 				String msg = smsArray[i].getMessageBody();
+				String realMsg="";
 				String[] msgParse = msg.split("@");
 				boolean isFacebook = false;
 				if(msgParse[msgParse.length-1].equals("T")){
@@ -36,10 +40,43 @@ public class SMSReceiver extends BroadcastReceiver {
 				}
 				String time[] = msgParse[msgParse.length-2].split(":"); 
 				String date[] = msgParse[msgParse.length-3].split("/"); 
+				for(int j=0;j<msgParse.length-3;j++)
+					realMsg=realMsg+msgParse[j];
 				
-				Toast.makeText(context, date[0] + date[1] + date[2], Toast.LENGTH_LONG).show();
-				Toast.makeText(context, time[0] + time[1], Toast.LENGTH_LONG).show();
-				Toast.makeText(context, ""+isFacebook, Toast.LENGTH_LONG).show();
+				
+//				Toast.makeText(context, date[0]+"/" + date[1] +"/"+ date[2], Toast.LENGTH_LONG).show();
+//				Toast.makeText(context, time[0] +":" +  time[1], Toast.LENGTH_LONG).show();
+//				Toast.makeText(context, ""+isFacebook, Toast.LENGTH_LONG).show();
+//		        Toast.makeText(context,""+msg.length(), Toast.LENGTH_LONG).show(); 
+
+				///////////LATA work
+				Calendar calendar = Calendar.getInstance();
+				
+				calendar.set(Calendar.YEAR,Integer.parseInt(date[0]) );
+				calendar.set(Calendar.MONTH,Integer.parseInt(date[1])-1 );
+				calendar.set(Calendar.DAY_OF_MONTH,Integer.parseInt(date[2]) );
+		    	calendar.set(Calendar.HOUR_OF_DAY,Integer.parseInt(time[0]));
+		    	calendar.set(Calendar.MINUTE,Integer.parseInt(time[1]));
+		    	//将�??�毫秒设置为0  
+	            calendar.set(Calendar.SECOND, 0);  
+	            calendar.set(Calendar.MILLISECOND, 0);
+	            Toast.makeText(context,""+calendar.getTime(), Toast.LENGTH_LONG).show(); 
+	            Intent alarmIntent = new Intent(context,AlarmReceiver.class);  
+	            Bundle alarmBundle=new Bundle();
+	            alarmBundle.putString("realMsg",realMsg);
+	            alarmBundle.putString("date", msgParse[msgParse.length-3]);
+	            alarmBundle.putString("time", msgParse[msgParse.length-2]);
+                alarmIntent.putExtras(alarmBundle);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(context,msg.length(), alarmIntent, 0);  
+		        //?��??��?管�??? 
+		        AlarmManager alarmManager = (AlarmManager)context.getSystemService(context.ALARM_SERVICE);  
+		        //设置?��?  
+		        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);  
+//		        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 10*1000, pendingIntent);  
+		        
+
+		        ///////////LATA work
+				
 				
 //				context.starActivity();
 
