@@ -8,13 +8,14 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
 
 
-public class AlarmLaunch extends Activity {
+public class AlarmLaunch extends Activity{
 	TextView textView1;
 	String realMsg,date,time;
 	Button button1;
@@ -40,6 +41,7 @@ public class AlarmLaunch extends Activity {
 		mp.start();
 		myVibrator = (Vibrator) getApplication().getSystemService(Service.VIBRATOR_SERVICE);
 		myVibrator.vibrate(new long[] { 1000, 1000 }, 0);
+		 setListeners();
 		
 		
 		

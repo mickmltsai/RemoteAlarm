@@ -41,7 +41,12 @@ public class SMSReceiver extends BroadcastReceiver {
 				//?��? text @2012/1/4@15:16@T
 				String msg = smsArray[i].getMessageBody();
 				String realMsg="";
+				
+				
 				String[] msgParse = msg.split("@");
+				for(int j=0;j<msgParse.length-3;j++)
+					realMsg=realMsg+msgParse[j];
+				
 				if(msgParse.length >= 4){
 					if(!msgParse[msgParse.length-1].matches("[TF]") ||
 							!msgParse[msgParse.length-2].matches("[0-9]{1,2}:[0-9]{1,2}") ||

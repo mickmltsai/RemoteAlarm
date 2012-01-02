@@ -16,9 +16,14 @@ public class AlarmReceiver extends BroadcastReceiver {
         realMsg=bundle.getString("realMsg");
         date=bundle.getString("date");
         time=bundle.getString("time");
+        
 		Toast.makeText(arg0, realMsg, Toast.LENGTH_LONG).show();
 		Intent alaramIntent = new Intent(arg0, AlarmLaunch.class); 
-        alaramIntent.putExtras(bundle);
+		Bundle bundleRet = new Bundle(); 
+        bundleRet.putString("realMsg", realMsg);
+        bundleRet.putString("date", date);
+        bundleRet.putString("time", time);
+		alaramIntent.putExtras(bundleRet);
         alaramIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
         arg0.startActivity(alaramIntent); 
         
