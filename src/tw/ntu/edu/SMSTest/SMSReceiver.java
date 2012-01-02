@@ -16,10 +16,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-<<<<<<< HEAD
-=======
 import android.sax.StartElementListener;
->>>>>>> 79fa0e4d83d7e70edbfba8453a1d640a541ce79b
 import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
@@ -71,12 +68,12 @@ public class SMSReceiver extends BroadcastReceiver {
 				
 				if(isFacebook){
 					Bundle b = new Bundle();
-					String realMsg = "";
+					String frontMsg = "";
 					for(int j=0; j<msgParse.length-3; j++){
-						realMsg += msgParse[j] + "@";
+						frontMsg += msgParse[j] + "@";
 					}
-					realMsg = realMsg.substring(0, realMsg.length()-1);
-					b.putString("msg", realMsg);
+					frontMsg = frontMsg.substring(0, frontMsg.length()-1);
+					b.putString("msg", frontMsg);
 	
 					Intent it = new Intent(context, Example.class);
 					it.putExtras(b);
