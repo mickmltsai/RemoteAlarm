@@ -1,5 +1,6 @@
 package tw.ntu.edu.SMSTest;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import com.facebook.android.Example;
@@ -9,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.sax.StartElementListener;
 import android.telephony.SmsMessage;
 import android.util.Log;
@@ -54,7 +56,16 @@ public class SMSReceiver extends BroadcastReceiver {
 				}
 				
 				if(isFacebook){
+					Bundle b = new Bundle();
+					String realMsg = "";
+					for(int j=0; j<msgParse.length-3; j++){
+						realMsg += msgParse[j] + "@";
+					}
+					realMsg = realMsg.substring(0, realMsg.length()-1);
+					b.putString("msg", realMsg);
+	
 					Intent it = new Intent(context, Example.class);
+					it.putExtras(b);
 					it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 					context.startActivity(it);
 				}
