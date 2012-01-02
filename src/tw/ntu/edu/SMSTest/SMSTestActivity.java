@@ -150,6 +150,7 @@ public class SMSTestActivity extends Activity {
 						Intent intent = new Intent();
 						intent.setClass(SMSTestActivity.this, AfterSendViewActivity.class);
 						startActivity(intent);
+						finish();
 
 					}
 
