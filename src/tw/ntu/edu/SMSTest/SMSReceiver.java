@@ -33,12 +33,12 @@ public class SMSReceiver extends BroadcastReceiver {
 			SmsMessage[] smsArray = new SmsMessage[pduData.length];
 			
 			boolean isFacebook = false;
-			String[] time;
-			String[] date;
+			String[] time = new String[1];
+			String[] date = new String[1];
 
 			for (int i = 0; i < pduData.length; i++) {
 				smsArray[i] = SmsMessage.createFromPdu((byte[]) pduData[i]);
-				//?¼å? text @2012/1/4@15:16@T
+				//?ï¿½ï¿½? text @2012/1/4@15:16@T
 				String msg = smsArray[i].getMessageBody();
 				String realMsg="";
 				String[] msgParse = msg.split("@");
@@ -73,7 +73,7 @@ public class SMSReceiver extends BroadcastReceiver {
 				calendar.set(Calendar.DAY_OF_MONTH,Integer.parseInt(date[2]) );
 		    	calendar.set(Calendar.HOUR_OF_DAY,Integer.parseInt(time[0]));
 		    	calendar.set(Calendar.MINUTE,Integer.parseInt(time[1]));
-		    	//å°?¿½??ï¿½æ¯«ç§?®¾ç½®ä¸º0  
+		    	//ï¿½?ï¿½ï¿½??ï¿½æ¯«ï¿½?ï¿½ï¿½ç½®ä¸º0  
 	            calendar.set(Calendar.SECOND, 0);  
 	            calendar.set(Calendar.MILLISECOND, 0);
 	            Toast.makeText(context,""+calendar.getTime(), Toast.LENGTH_LONG).show(); 
