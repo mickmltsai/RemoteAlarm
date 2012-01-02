@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">RemoteAlarm</string>
-    <string name="title_hint">�?��?�簡�??�?/string>
-    <string name="date_hint">?��?以�??????/string>
-    <string name="time_hint">?��?以�??????/string>
-    <string name="send">???簡�?</string>
-    <string name="clear">?????��</string>
-    <string name="phone_hint">�?��?��?話�?�?/string>
-    <string name="post_fb">?��?�?ost?�FB</string>
-    <string name="left_char">"?��?�??: "</string>
-
-    <string name="send_after">?��?�??</string>
-    <string name="backSend">?�簡�?/string>
-    <string name="exit_app">?��?</string>
-
-
+    <string name="title_hint">請輸入簡訊內容</string>
+    <string name="date_hint">長按以選擇日期</string>
+    <string name="time_hint">長按以選擇時間</string>
+    <string name="send">送出簡訊</string>
+    <string name="clear">回覆預設</string>
+    <string name="phone_hint">請輸入電話號碼</string>
+    <string name="post_fb">是否要Post在FB</string>
+    <string name="left_char">"剩餘字數: "</string>
+    <string name="send_after">發送完成</string>
+    <string name="backSend">新簡訊</string>
+    <string name="exit_app">離開</string>
     <string name="request">Request!</string>
     <string name="hello">Hello World!</string>
-    <string name="upload">Upload Photo</string><string name="post">Wall Post!</string>
+    <string name="upload">Upload Photo</string>
+    <string name="post">Wall Post!</string>
     <string name="delete">Delete Post</string>
-	
 
 </resources>
