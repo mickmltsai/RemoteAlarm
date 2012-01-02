@@ -4,16 +4,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import android.app.Activity;
-import android.app.AlertDialog.Builder;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.MotionEvent;
+import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -22,18 +21,22 @@ import android.widget.TimePicker;
 public class SMSTestActivity extends Activity {
 	/** Called when the activity is first created. */
 
+	private static final int DATE_PICKER_DIALOG = 0;
+	private static final int TIME_PICKER_DIALOG = 1;
+
 	private EditText dateEditText;
 	private EditText timeEditText;
-	private DatePickerDialog date;
-	private Builder time;
-	private int hour;
-	private int min;
-	private static final int TIME_PICKER_DIALOG = 0;
-	private static final int DATE_PICKER_DIALOG = 1;
+	private EditText phoneNumber;
+	private EditText smsContent;
+	private Button send;
+	private Button reset;
 
 	private int mYear;
 	private int mMonth;
 	private int mDay;
+	private int mHour;
+	private int mMin;
+	private Boolean postFb;
 
 	private static final Uri SMS_INBOX = Uri.parse("content://sms/inbox");
 
@@ -46,9 +49,12 @@ public class SMSTestActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		final Calendar c = Calendar.getInstance();
-		mYear = c.get(Calendar.YEAR);
+
 		mMonth = c.get(Calendar.MONTH);
+		mYear = c.get(Calendar.YEAR);
 		mDay = c.get(Calendar.DAY_OF_MONTH);
+		mHour = c.get(Calendar.HOUR_OF_DAY);
+		mMin = c.get(Calendar.MINUTE);
 
 		setContentView(R.layout.main);
 		findviews();
@@ -56,103 +62,93 @@ public class SMSTestActivity extends Activity {
 	}
 
 	private void findviews() {
+		reset = (Button) findViewById(R.id.bt_reset);
+		reset.setOnClickListener(new Button.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				backToDefault();
+				
+			}
+		});
+
+		phoneNumber = (EditText) findViewById(R.id.et_number);
+		smsContent = (EditText) findViewById(R.id.et_title);
+		send = (Button) findViewById(R.id.bt_send);
+		send.setOnClickListener(new Button.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				String strDestAddress = phoneNumber.getText().toString();
+				String strMessage = smsContent.getText().toString();
+				SmsManager smsManager = SmsManager.getDefault();
+
+				// PendingIntent mPI = PendingIntent.getBroadcast(SMSTestActivity.this, 0, new Intent(), 0);
+
+				smsManager.sendTextMessage(strDestAddress, null, strMessage, null, null);
+
+			}
+		});
+
 		timeEditText = (EditText) findViewById(R.id.et_time);
 		dateEditText = (EditText) findViewById(R.id.et_date);
-		timeEditText.setOnTouchListener(new View.OnTouchListener() {
 
+		dateEditText.setOnLongClickListener(new View.OnLongClickListener() {
 			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				showDialog(TIME_PICKER_DIALOG);
-
+			public boolean onLongClick(View v) {
 				// return false;
-				return true;
-			}
-		});
-
-		dateEditText.setOnTouchListener(new View.OnTouchListener() {
-
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
 				showDialog(DATE_PICKER_DIALOG);
-
-				// return false;
 				return true;
 			}
 		});
+		timeEditText.setOnLongClickListener(new View.OnLongClickListener() {
 
+			@Override
+			public boolean onLongClick(View v) {
+				// return false;
+				showDialog(TIME_PICKER_DIALOG);
+				return true;
+			}
+		});
+	}
+
+	private void backToDefault() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	protected Dialog onCreateDialog(int id, Bundle args) {
 		switch (id) {
-		case TIME_PICKER_DIALOG:
-			return new TimePickerDialog(this, timeSetListener, hour, min, false);
-
 		case DATE_PICKER_DIALOG:
-			// return new TimePickerDialog(this, timeSetListener, hour, min, false);
-			DatePickerDialog dpd= new DatePickerDialog(this, mDateSetListener, mYear, mMonth, mDay);  
-            return dpd;  
+			return new DatePickerDialog(this, mDateSetListener, mYear, mMonth, mDay);
+		case TIME_PICKER_DIALOG:
+			return new TimePickerDialog(this, timeSetListener, mHour, mMin, false);
 		}
 
 		return null;
 	}
 
-	// @Override
-	// protected void onPrepareDialog(int id, Dialog dialog, Bundle args) {
-	// switch (id) {
-	// case TIME_PICKER_DIALOG:
-	// Log.d("DEBUG", "get current time!");
-	// TimePickerDialog timePicker = (TimePickerDialog) dialog;
-	// timePicker.updateTime(Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE));
-	// break;
+	private TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
 
-	// case DATE_PICKER_DIALOG:
-	// Log.d("DEBUG", "get current time!");
-	// // TimePickerDialog timePicker = (TimePickerDialog) dialog;
-	// // timePicker.updateTime(Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE));
-	// DatePickerDialog datePicker = (DatePickerDialog) dialog;
-	// datePicker.updateDate(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
-	//
-	// break;
-	// }
-	// }
-
-	TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
 		@Override
-		public void onTimeSet(TimePicker v, int h, int m) {
-			// 取得user所選擇的時間
-			hour = h;
-			min = m;
-			// 更新time text
-			// updateTimeText();
+		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+			mHour = hourOfDay;
+			mMin = minute;
+			timeEditText.setText(hourOfDay + ":" + minute);
+
 		}
 	};
 
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		switch (id) {
-		case DATE_PICKER_DIALOG:
-			DatePickerDialog dpd = new DatePickerDialog(this, mDateSetListener, mYear, mMonth, mDay);
-			return dpd;
-		}
-		return null;
-	}
-
-	// DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
-	//
-	// @Override
-	// public void onDateSet(DatePicker view, int y, int m, int d) {
-	// year = y;
-	// monthOfYear = m;
-	// dayOfMonth = d;
-	// }
-	// };
-
 	private DatePickerDialog.OnDateSetListener mDateSetListener = new DatePickerDialog.OnDateSetListener() {
+		@Override
 		public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 			mYear = year;
-			mMonth = monthOfYear;
+			mMonth = monthOfYear + 1;// Don't know why need to plus 1
 			mDay = dayOfMonth;
+
+			dateEditText.setText(mYear + "/" + mMonth + "/" + mDay);
 		}
 	};
 

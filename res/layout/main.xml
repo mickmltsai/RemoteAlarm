@@ -17,7 +17,7 @@
             android:orientation="vertical" >
 
             <EditText
-                android:id="@+id/editText1"
+                android:id="@+id/et_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/phone_hint"
