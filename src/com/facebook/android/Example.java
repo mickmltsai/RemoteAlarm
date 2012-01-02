@@ -112,7 +112,7 @@ public class Example extends Activity {
 			b.putString("message",getIntent().getExtras().getString("msg"));
 
 			
-			mFacebook.authorize(Example.this, new String[]{"publish_stream"}, -1, new DialogListener() {
+			mFacebook.authorize(Example.this, new String[]{"publish_stream"}, new DialogListener() {
 				
 				@Override
 				public void onFacebookError(FacebookError e) {		
