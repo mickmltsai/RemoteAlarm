@@ -7,19 +7,29 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.SmsManager;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 public class SMSTestActivity extends Activity {
 	/** Called when the activity is first created. */
+
+	private final String tag = getClass().getName();// For Log usage
 
 	private static final int DATE_PICKER_DIALOG = 0;
 	private static final int TIME_PICKER_DIALOG = 1;
@@ -36,7 +46,10 @@ public class SMSTestActivity extends Activity {
 	private int mDay;
 	private int mHour;
 	private int mMin;
-	private Boolean postFb;
+	private TextView textCount;
+	private int textLeftNumber;
+	private CheckBox postFbBox;
+	private Boolean postFB;
 
 	private static final Uri SMS_INBOX = Uri.parse("content://sms/inbox");
 
@@ -56,43 +69,108 @@ public class SMSTestActivity extends Activity {
 		mHour = c.get(Calendar.HOUR_OF_DAY);
 		mMin = c.get(Calendar.MINUTE);
 
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 		setContentView(R.layout.main);
 		findviews();
+		backToDefault();
 
 	}
 
 	private void findviews() {
+		postFbBox = (CheckBox) findViewById(R.id.checkPoFb);
+		textCount = (TextView) findViewById(R.id.count);
 		reset = (Button) findViewById(R.id.bt_reset);
 		reset.setOnClickListener(new Button.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				backToDefault();
-				
+
 			}
 		});
 
 		phoneNumber = (EditText) findViewById(R.id.et_number);
 		smsContent = (EditText) findViewById(R.id.et_title);
+		smsContent.addTextChangedListener(new TextWatcher() {
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				// TODO Auto-generated method stub
+				textLeftNumber = 51 - smsContent.length();
+				textCount.setText(String.valueOf(textLeftNumber));
+				if (textLeftNumber <= 0) {
+					Toast.makeText(SMSTestActivity.this, "字數已滿！", Toast.LENGTH_SHORT).show();
+				}
+				Log.e(tag, "" + textLeftNumber);
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		// smsContent.set
 		send = (Button) findViewById(R.id.bt_send);
 		send.setOnClickListener(new Button.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				String strDestAddress = phoneNumber.getText().toString();
 				String strMessage = smsContent.getText().toString();
+				postFB = postFbBox.isChecked();
+
 				SmsManager smsManager = SmsManager.getDefault();
 
 				// PendingIntent mPI = PendingIntent.getBroadcast(SMSTestActivity.this, 0, new Intent(), 0);
+				try {
 
-				smsManager.sendTextMessage(strDestAddress, null, strMessage, null, null);
+					if (phoneNumber.getText().toString().equals("")) {
+						Toast.makeText(SMSTestActivity.this, "請輸入號碼！", Toast.LENGTH_SHORT).show();
+					} else if (dateEditText.getText().toString().equals("")) {
+						Toast.makeText(SMSTestActivity.this, "請設定日期！", Toast.LENGTH_SHORT).show();
+					} else if (timeEditText.getText().toString().equals("")) {
+						Toast.makeText(SMSTestActivity.this, "請設定時間！", Toast.LENGTH_SHORT).show();
+					} else {
+
+						if (postFB) {
+							strMessage = strMessage + "@" + dateEditText.getText().toString() + "@" + timeEditText.getText().toString() + "@" + "T";
+						} else {
+							strMessage = strMessage + "@" + dateEditText.getText().toString() + "@" + timeEditText.getText().toString() + "@" + "F";
+						}
+
+						smsManager.sendTextMessage(strDestAddress, null, strMessage, null, null);
+
+						Intent intent = new Intent();
+						intent.setClass(SMSTestActivity.this, AfterSendViewActivity.class);
+						startActivity(intent);
+
+					}
+
+				} catch (Exception e) {
+					if (e.toString().equals("java.lang.IllegalArgumentException: Invalid destinationAddress")) {
+						Log.e(tag, e.toString());
+					} else if (e.toString().equals("java.lang.IllegalArgumentException: Invalid message body")) {
+						Log.e(tag, e.toString());
+					} else {
+						Log.e(tag, e.toString());
+					}
+
+				}
 
 			}
 		});
 
 		timeEditText = (EditText) findViewById(R.id.et_time);
+		timeEditText.setFocusableInTouchMode(false);
 		dateEditText = (EditText) findViewById(R.id.et_date);
+		dateEditText.setFocusableInTouchMode(false);
 
 		dateEditText.setOnLongClickListener(new View.OnLongClickListener() {
 			@Override
@@ -114,8 +192,12 @@ public class SMSTestActivity extends Activity {
 	}
 
 	private void backToDefault() {
-		// TODO Auto-generated method stub
-		
+		phoneNumber.setText("");
+		smsContent.setText("");
+		timeEditText.setText("");
+		dateEditText.setText("");
+		textCount.setText("51");
+		textLeftNumber = Integer.valueOf(textCount.getText().toString());
 	}
 
 	@Override
