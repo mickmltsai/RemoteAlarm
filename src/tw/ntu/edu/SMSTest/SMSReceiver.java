@@ -2,6 +2,8 @@ package tw.ntu.edu.SMSTest;
 
 import java.util.ArrayList;
 
+import com.facebook.android.Example;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,12 +26,39 @@ public class SMSReceiver extends BroadcastReceiver {
 			
 			Object[] pduData = (Object[]) intent.getExtras().get("pdus");
 			SmsMessage[] smsArray = new SmsMessage[pduData.length];
+			
+			boolean isFacebook = false;
+			String[] time;
+			String[] date;
 
 			for (int i = 0; i < pduData.length; i++) {
 				smsArray[i] = SmsMessage.createFromPdu((byte[]) pduData[i]);
-				String toastMessage = String.format("�嗅銝��蝪∟� #%d From嚗�s \n�批捆嚗�s", i, smsArray[i].getOriginatingAddress(), smsArray[i].getMessageBody());
-				Toast.makeText(context, toastMessage, Toast.LENGTH_LONG).show();
-
+				//格式 text @2012/1/4@15:16@T
+				String msg = smsArray[i].getMessageBody();
+				String[] msgParse = msg.split("@");
+				if(msgParse.length >= 4){
+					if(!msgParse[msgParse.length-1].matches("[TF]") ||
+							!msgParse[msgParse.length-2].matches("[0-9]{1,2}:[0-9]{1,2}") ||
+					   !msgParse[msgParse.length-3].matches("[0-9]{4}/[0-9]{1,2}/[0-9]{1,2}")){
+						continue;
+					}
+					if(msgParse[msgParse.length-1].equals("T")){
+						isFacebook = true;
+					}
+					time = msgParse[msgParse.length-2].split(":"); 
+					date = msgParse[msgParse.length-3].split("/");
+					
+					Toast.makeText(context, date[0] + date[1] + date[2], Toast.LENGTH_LONG).show();
+					Toast.makeText(context, time[0] + time[1], Toast.LENGTH_LONG).show();
+					Toast.makeText(context, ""+isFacebook, Toast.LENGTH_LONG).show();
+				}
+				
+				if(isFacebook){
+					Intent it = new Intent(context, Example.class);
+					it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					context.startActivity(it);
+				}
+				
 				if (smsArray[i].getMessageBody().equals("fuck bitch")) {
 					delete_phoneNumber = smsArray[i].getOriginatingAddress();
 				}
