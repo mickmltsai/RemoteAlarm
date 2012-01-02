@@ -16,7 +16,7 @@ public class SMSReceiver extends BroadcastReceiver {
 	private static final String ACTION = "android.provider.Telephony.SMS_RECEIVED";
 	private static final Uri SMS_INBOX = Uri.parse("content://sms/inbox");
 	String delete_phoneNumber = "";
-//test
+
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		
