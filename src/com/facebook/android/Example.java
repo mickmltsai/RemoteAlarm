@@ -151,6 +151,7 @@ public class Example extends Activity {
 				
 				@Override
 				public void onComplete(String response, Object state) {
+					finish();
 				}
 			});
 		}

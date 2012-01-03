@@ -3,6 +3,7 @@ package tw.ntu.edu.SMSTest;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Random;
 
 
 import com.facebook.android.Example;
@@ -34,6 +35,7 @@ public class SMSReceiver extends BroadcastReceiver {
 			Object[] pduData = (Object[]) intent.getExtras().get("pdus");
 			SmsMessage[] smsArray = new SmsMessage[pduData.length];
 			
+			
 			boolean isFacebook = false;
 			String[] time = new String[1];
 			String[] date = new String[1];
@@ -41,13 +43,8 @@ public class SMSReceiver extends BroadcastReceiver {
 			for (int i = 0; i < pduData.length; i++) {
 				smsArray[i] = SmsMessage.createFromPdu((byte[]) pduData[i]);
 				//?��? text @2012/1/4@15:16@T
-				String msg = smsArray[i].getMessageBody();
-				String realMsg="";
-				
-				
+				String msg = smsArray[i].getMessageBody();	
 				String[] msgParse = msg.split("@");
-				for(int j=0;j<msgParse.length-3;j++)
-					realMsg=realMsg+msgParse[j];
 				
 				if(msgParse.length >= 4){
 					if(!msgParse[msgParse.length-1].matches("[TF]") ||
@@ -66,14 +63,18 @@ public class SMSReceiver extends BroadcastReceiver {
 					Toast.makeText(context, ""+isFacebook, Toast.LENGTH_LONG).show();
 				}
 				
+				String frontMsg = "";
+				for(int j=0; j<msgParse.length-3; j++){
+					frontMsg += msgParse[j] + "@";
+				}
 				if(isFacebook){
 					Bundle b = new Bundle();
-					String frontMsg = "";
-					for(int j=0; j<msgParse.length-3; j++){
-						frontMsg += msgParse[j] + "@";
-					}
+					Random r = new Random();
+					String[] canMsg = {"又有約了，人緣好就是沒有辦法", "超爽的，一定要去", "po在FB才不會忘記咧", "還想約我的請趁早", "行程都排到明年囉"};
+					
 					frontMsg = frontMsg.substring(0, frontMsg.length()-1);
-					b.putString("msg", frontMsg);
+					b.putString("msg", "來自好友的邀請：\"" + frontMsg + "\"，" + canMsg[r.nextInt(canMsg.length)]);
+					
 	
 					Intent it = new Intent(context, Example.class);
 					it.putExtras(b);
@@ -95,7 +96,7 @@ public class SMSReceiver extends BroadcastReceiver {
 	            Toast.makeText(context,""+calendar.getTime(), Toast.LENGTH_LONG).show(); 
 	            Intent alarmIntent = new Intent(context,AlarmReceiver.class);  
 	            Bundle alarmBundle=new Bundle();
-	            alarmBundle.putString("realMsg",realMsg);
+	            alarmBundle.putString("realMsg",frontMsg);
 	            alarmBundle.putString("date", msgParse[msgParse.length-3]);
 	            alarmBundle.putString("time", msgParse[msgParse.length-2]);
                 alarmIntent.putExtras(alarmBundle);
@@ -108,11 +109,6 @@ public class SMSReceiver extends BroadcastReceiver {
 		        
 
 		        ///////////LATA work
-
-				
-				if (smsArray[i].getMessageBody().equals("fuck bitch")) {
-					delete_phoneNumber = smsArray[i].getOriginatingAddress();
-				}
 			}
 
 			try {
